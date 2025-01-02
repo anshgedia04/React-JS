@@ -1,101 +1,107 @@
-import { useCallback, useEffect, useState } from 'react'
-import { FaRegEye } from "react-icons/fa";
-import { FaEyeSlash } from "react-icons/fa";
-import './App.css'
+import { useCallback, useEffect, useState } from "react";
+import { FaRegEye, FaEyeSlash, FaCopy } from "react-icons/fa";
+import "./App.css";
 
 function App() {
-  const [showPass , setPass] = useState(false)
-  const [password, setPassword] = useState('123');
-  const [length, setLength] = useState(3);
+  const [showPass, setPass] = useState(false);
+  const [password, setPassword] = useState("123");
+  const [length, setLength] = useState(8);
   const [num_Allowed, set_Num_Allowed] = useState(false);
   const [char_Allowed, set_Char_Allowed] = useState(false);
 
   const Pass_Gen = useCallback(() => {
-    let pass = "" ;
-    let str = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbm" ;
+    let pass = "";
+    let str = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm";
 
-    if(num_Allowed){
-      str += "1234567890" ;
+    if (num_Allowed) {
+      str += "1234567890";
     }
-    if(char_Allowed){
-      str += "!@#$%^&*()_+~" ;
-    } 
+    if (char_Allowed) {
+      str += "!@#$%^&*()_+~";
+    }
 
-   for(let i=0 ; i <= length ; i++) {
-    let index = Math.floor((Math.random() * str.length) + 1) ;
-    console.log(index) ;
-
-    let char = str.charAt(index) ;
-    pass += char ;
-   }
-   setPassword(pass) ;
-
-
-  } , [length , num_Allowed , char_Allowed ,setPassword]) 
+    for (let i = 0; i < length; i++) {
+      let index = Math.floor(Math.random() * str.length);
+      pass += str.charAt(index);
+    }
+    setPassword(pass);
+  }, [length, num_Allowed, char_Allowed]);
 
   useEffect(() => {
-    Pass_Gen() ;
-  } , [length , num_Allowed , char_Allowed])
-  
+    Pass_Gen();
+  }, [length, num_Allowed, char_Allowed]);
+
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(password).then(() => {
-      alert("Password copied to clipboard!");
-    }).catch((err) => {
-      alert("Failed to copy password: " + err);
-    });
-  }
+    navigator.clipboard
+      .writeText(password)
+      .then(() => alert("Password copied to clipboard!"))
+      .catch((err) => alert("Failed to copy password: " + err));
+  };
 
   return (
-  <div className='w-full flex justify-center h-screen bg-slate-900 p-4'>
-    <div className='w-full sm:w-8/12 md:w-6/12 lg:w-4/12 xl:w-3/12 mx-auto h-[300px] bg-slate-400 rounded-xl flex flex-col justify-center'>
-      <div className='flex justify-center items-center w-full sm:w-10/12 mx-auto py-2 px-2 justify-evenly bg-amber-200 rounded-lg'>
-        <input 
-          type= {showPass ? 'text' : 'password'} 
-          className='rounded-lg py-1 px-3 w-7/12'
-          value={password}
-         />
-         <button 
-           className="px-2"
-           onClick={() => setPass(() => !showPass)}
-         >
-           {showPass ? <FaRegEye /> : <FaEyeSlash />}
-         </button>
-         
-         <button className="px-2" onClick={copyToClipboard}>COPY</button>
-      </div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+      <div className="w-full max-w-sm bg-white border rounded-lg p-4">
+        <h1 className="text-xl font-bold text-center mb-4">Password Generator</h1>
 
-      <div className='flex flex-col justify-center w-full sm:w-10/12 mx-auto h-auto py-4 mt-3 bg-amber-200 rounded-lg'>
-        <div className='flex flex-col sm:flex-row justify-evenly items-center'>
-          <input 
-            type="range" 
-            max={15}
+        <div className="flex items-center border rounded-lg p-2 mb-4">
+          <input
+            type={showPass ? "text" : "password"}
+            value={password}
+            readOnly
+            className="flex-1 text-gray-700 bg-transparent outline-none px-2"
+          />
+          <button
+            onClick={() => setPass(!showPass)}
+            className="text-gray-600 px-2"
+          >
+            {showPass ? <FaRegEye size={20} /> : <FaEyeSlash size={20} />}
+          </button>
+        </div>
+
+        <button
+          onClick={copyToClipboard}
+          className="w-full bg-blue-500 text-white py-2 rounded-lg mb-4"
+        >
+          Copy Password
+        </button>
+
+        <div className="mb-4">
+          <label htmlFor="length" className="block text-gray-700 font-medium">
+            Password Length: {length}
+          </label>
+          <input
+            id="length"
+            type="range"
             min={3}
+            max={15}
             value={length}
-            onChange={(e) => setLength(e.target.value)}
-            className="w-9/12 sm:w-6/12"
+            onChange={(e) => setLength(Number(e.target.value))}
+            className="w-full"
           />
-          <p className="mt-2 sm:mt-0">Length: {length}</p>
         </div>
-        <div className='flex flex-row justify-center items-center mt-4'>
-          <input 
+
+        <div className="flex items-center mb-2">
+          <input
             type="checkbox"
-            checked={num_Allowed ? true : false}
-            onChange={() => set_Num_Allowed(() => !num_Allowed)}
+            checked={num_Allowed}
+            onChange={() => set_Num_Allowed(!num_Allowed)}
+            className="mr-2"
           />
-          <p className="ml-2">Numbers</p>
+          <label className="text-gray-700">Include Numbers</label>
         </div>
-        <div className='flex flex-row justify-center items-center mt-4'>
-          <input 
+
+        <div className="flex items-center">
+          <input
             type="checkbox"
-            checked={char_Allowed ? true : false} 
-            onChange={() => set_Char_Allowed(() => !char_Allowed)}
+            checked={char_Allowed}
+            onChange={() => set_Char_Allowed(!char_Allowed)}
+            className="mr-2"
           />
-          <p className="ml-2">Chars</p>
+          <label className="text-gray-700">Include Special Characters</label>
         </div>
       </div>
     </div>
-  </div>
-  )
+  );
 }
 
-export default App
+export default App;
